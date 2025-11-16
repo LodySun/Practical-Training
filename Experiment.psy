@@ -1,0 +1,118 @@
+options
+  mouse on
+  bitmapdir stimuli
+  sounddir stimuli
+  escape
+  scale stimuli
+
+fonts
+  arial 18
+
+bitmaps
+  include mybitmaplist.txt
+
+sounds
+  correct
+  wrong
+
+table wcsttable
+  include wcst4d.txt
+
+task wcst_trial
+  table wcsttable
+  delay 1000
+  draw off
+    show bitmap circle1red_up        -175 -100
+    show bitmap triangle2green_right  -25  -100
+    show bitmap cross3blue_down      125  -100
+    show bitmap star4yellow_left    275  -100
+  draw on
+  set $stimulus circle1red_up
+  set $stimulus @1
+  set $sx -300
+  set $sy  200
+  draw off
+    show bitmap $stimulus $sx $sy
+  draw on
+  set $a 0
+  readmouse l @2 10000 range 1 4
+  set $a under MOUSE_X MOUSE_Y
+  # TIMEOUT
+  if STATUS == TIMEOUT || $a == 0
+    set $anyerror 1
+    set $perseveration 0
+    set $nonperseveration 0
+    set $a 0
+    save $stimulus $a @2 @3 @4 @5 RT STATUS $anyerror $perseveration $nonperseveration
+    clear -1
+    draw off
+      sound wrong
+      show bitmap fb_tooslow 0 150
+    draw on
+    delay 700
+    clear -1
+  else
+    # Moving Cards
+    if $a == 1
+      set $tx -175
+      set $ty -100
+    fi
+    if $a == 2
+      set $tx -25
+      set $ty -100
+    fi
+    if $a == 3
+      set $tx 125
+      set $ty -100
+    fi
+    if $a == 4
+      set $tx 275
+      set $ty -100
+    fi
+    clear -1
+    draw off
+      show bitmap $stimulus $tx 30
+    draw on
+    # Calculate errors
+    if STATUS == CORRECT
+      set $anyerror 0
+      set $perseveration 0
+      set $nonperseveration 0
+    fi
+    if STATUS == WRONG
+      set $anyerror 1
+      if $a == @3
+        set $perseveration 1
+        set $nonperseveration 0
+      else
+        set $perseveration 0
+        set $nonperseveration 1
+      fi
+    fi
+    save $stimulus $a @2 @3 @4 @5 RT STATUS $anyerror $perseveration $nonperseveration
+ 
+    if STATUS == CORRECT
+      draw off
+        sound correct
+        show bitmap fb_correct 0 150
+      draw on
+      delay 700
+      clear -1       
+      clear -1       
+    fi
+    if STATUS == WRONG
+      draw off
+        sound wrong
+        show bitmap fb_wrong 0 150
+      draw on
+      delay 700
+      clear -1
+      clear -1
+    fi
+  fi
+
+block main
+  tasklist
+    wcst_trial 200 fixed
+  end
+end block
