@@ -18,6 +18,34 @@ sounds
 table wcsttable
   include wcst4d.txt
 
+task intro
+  keys up down          
+  set &page 1           
+  set &done 0           
+  while &done == 0
+    clear -1            
+    if &page == 1
+      show bitmap WCST_instructions_1 0 0    
+    fi
+    if &page == 2
+      show bitmap WCST_instructions_2 0 0    
+    fi
+    readkey 1 100000              
+    if KEY == 1
+      if &page > 1
+        set &page 1      
+      fi
+    fi
+    if KEY == 2
+      if &page < 2
+        set &page 2    
+      else
+        set &done 1              
+      fi
+    fi
+  while-end
+  clear -1
+
 task wcst_trial
   table wcsttable
   delay 1000
@@ -37,7 +65,6 @@ task wcst_trial
   set $a 0
   readmouse l @2 10000 range 1 4
   set $a under MOUSE_X MOUSE_Y
-  # TIMEOUT
   if STATUS == TIMEOUT || $a == 0
     set $anyerror 1
     set $perseveration 0
@@ -52,7 +79,6 @@ task wcst_trial
     delay 700
     clear -1
   else
-    # Moving Cards
     if $a == 1
       set $tx -175
       set $ty -100
@@ -73,7 +99,6 @@ task wcst_trial
     draw off
       show bitmap $stimulus $tx 30
     draw on
-    # Calculate errors
     if STATUS == CORRECT
       set $anyerror 0
       set $perseveration 0
@@ -90,13 +115,12 @@ task wcst_trial
       fi
     fi
     save $stimulus $a @2 @3 @4 @5 RT STATUS $anyerror $perseveration $nonperseveration
- 
     if STATUS == CORRECT
       draw off
         sound correct
         show bitmap fb_correct 0 150
       draw on
-      delay 700
+      delay 750
       clear -1       
       clear -1       
     fi
@@ -105,7 +129,7 @@ task wcst_trial
         sound wrong
         show bitmap fb_wrong 0 150
       draw on
-      delay 700
+      delay 750
       clear -1
       clear -1
     fi
@@ -113,6 +137,7 @@ task wcst_trial
 
 block main
   tasklist
+    intro 1 fixed
     wcst_trial 200 fixed
   end
-end block
+end
