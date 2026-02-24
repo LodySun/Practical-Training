@@ -70,7 +70,7 @@ task wcst_trial
     set $perseveration 0
     set $nonperseveration 0
     set $a 0
-    save $stimulus $a @2 @3 @4 @5 RT STATUS $anyerror $perseveration $nonperseveration
+    save $6 $a @2 @3 @4 @5 RT STATUS $anyerror $perseveration $nonperseveration
     clear -1
     draw off
       sound wrong
@@ -114,7 +114,7 @@ task wcst_trial
         set $nonperseveration 1
       fi
     fi
-    save $stimulus $a @2 @3 @4 @5 RT STATUS $anyerror $perseveration $nonperseveration
+    save $6 $a @2 @3 @4 @5 RT STATUS $anyerror $perseveration $nonperseveration
     if STATUS == CORRECT
       draw off
         sound correct
